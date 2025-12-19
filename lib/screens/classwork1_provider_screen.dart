@@ -1,20 +1,18 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
-final resultprovider = StateProvider((ref) {
-  return 0;
-});
+final firstNumberProvider = StateProvider<int>((ref) => 0);
+final secondNumberProvider = StateProvider<int>((ref) => 0);
+final resultProvider = StateProvider<int>((ref) => 0);
 
 class Classwork1ProviderScreen extends ConsumerWidget {
   const Classwork1ProviderScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    int _first = 0;
-    int _second = 0;
+    final result = ref.watch(resultProvider);
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -32,6 +30,7 @@ class Classwork1ProviderScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // AppBar Row
               Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Row(
@@ -52,6 +51,7 @@ class Classwork1ProviderScreen extends ConsumerWidget {
                   ],
                 ),
               ),
+              // Number 1
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: TextFormField(
@@ -73,10 +73,14 @@ class Classwork1ProviderScreen extends ConsumerWidget {
                       color: Colors.white70,
                     ),
                   ),
-                  onChanged: (value) => {_first = value as int},
+                  onChanged: (value) {
+                    ref.read(firstNumberProvider.notifier).state =
+                        int.tryParse(value) ?? 0;
+                  },
                 ),
               ),
               const SizedBox(height: 12),
+              // Number 2
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: TextFormField(
@@ -98,17 +102,26 @@ class Classwork1ProviderScreen extends ConsumerWidget {
                       color: Colors.white70,
                     ),
                   ),
-                  onChanged: (value) => {_second = value as int},
+                  onChanged: (value) {
+                    ref.read(secondNumberProvider.notifier).state =
+                        int.tryParse(value) ?? 0;
+                  },
                 ),
               ),
               const SizedBox(height: 24),
+              // Operation Buttons
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
                   children: [
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          final first = ref.read(firstNumberProvider);
+                          final second = ref.read(secondNumberProvider);
+                          ref.read(resultProvider.notifier).state =
+                              first + second;
+                        },
                         icon: const Icon(Icons.add),
                         label: const Text('Add'),
                         style: ElevatedButton.styleFrom(
@@ -124,7 +137,12 @@ class Classwork1ProviderScreen extends ConsumerWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          final first = ref.read(firstNumberProvider);
+                          final second = ref.read(secondNumberProvider);
+                          ref.read(resultProvider.notifier).state =
+                              first - second;
+                        },
                         icon: const Icon(Icons.remove),
                         label: const Text('Subtract'),
                         style: ElevatedButton.styleFrom(
@@ -147,7 +165,12 @@ class Classwork1ProviderScreen extends ConsumerWidget {
                   children: [
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          final first = ref.read(firstNumberProvider);
+                          final second = ref.read(secondNumberProvider);
+                          ref.read(resultProvider.notifier).state =
+                              first * second;
+                        },
                         icon: const Icon(Icons.close),
                         label: const Text('Multiply'),
                         style: ElevatedButton.styleFrom(
@@ -163,7 +186,13 @@ class Classwork1ProviderScreen extends ConsumerWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          final first = ref.read(firstNumberProvider);
+                          final second = ref.read(secondNumberProvider);
+                          ref.read(resultProvider.notifier).state = second == 0
+                              ? 0
+                              : (first ~/ second);
+                        },
                         icon: const Icon(Icons.percent),
                         label: const Text('Divide'),
                         style: ElevatedButton.styleFrom(
@@ -179,6 +208,7 @@ class Classwork1ProviderScreen extends ConsumerWidget {
                   ],
                 ),
               ),
+              // Result
               Expanded(
                 child: Center(
                   child: Container(
@@ -197,7 +227,7 @@ class Classwork1ProviderScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          ref.watch(resultprovider).toString(),
+                          result.toString(),
                           style: Theme.of(context).textTheme.displayMedium
                               ?.copyWith(color: Colors.white),
                         ),
